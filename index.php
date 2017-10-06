@@ -18,8 +18,7 @@
 	</head>
 
 	<body>
-		
-<button>Get</button>
+	
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.2/pixi.min.js"></script>
