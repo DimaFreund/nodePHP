@@ -2,8 +2,9 @@ var socket = io.connect( 'http://localhost:8080' );
 
 socket.on( 'message', function( data ) {
 	ball.position = data.position;
+    console.log(data.position);
 	twoplayer.position = data.twoplayer;
-		});
+});
 
 
 var app; //создаем глобальную переменную нашей игры
@@ -49,18 +50,16 @@ function return90Vector(vec){
 function return180Vector(vec){
   return multiplexVectorConstant(vec, -1);
 }
-// function plusVectorAbs(vec1, vec2){
-//   var mask = []
-// }
+
 var model = {
     createCanvas: function() {
         app = new PIXI.Application(vall.width, vall.height); //создае холст
         document.body.appendChild(app.view); //выводим его в тело страницы
     },
     drawCircle: function(vec) {
-     
-       
-       
+
+
+
         var circle = new PIXI.Graphics(); //создаем новый графический элемент
         circle.lineStyle(0); //начинаем рисовать
         circle.beginFill(0x000011, 1); //задаем рандомный цвет
@@ -106,29 +105,29 @@ var firstplayer = {
         player.position.y = firstplayer.mousePosition[1];
         firstplayer.lastspeed();
         socket.emit( 'message', { position: firstplayer.mousePosition } );
-        }    
-    },
-    lastspeed: function() {
-      this.lastSpeedValue = minusVector(this.lastPosition, this.mousePosition);
-      this.lastPosition = this.mousePosition;
-      
-    }
+    }    
+},
+lastspeed: function() {
+  this.lastSpeedValue = minusVector(this.lastPosition, this.mousePosition);
+  this.lastPosition = this.mousePosition;
+
+}
 }
 
 var twoplayer = {
 	position: [0, 0],
     createPlayer: function() {    
       player2 = model.drawCircle(0, 0);
-    },
+  },
 
-    setposition: function() { 
-    	player2.position.x = this.position[0];
-    	player2.position.y = this.position[1];
-    }
-       
+  setposition: function() { 
+   player2.position.x = this.position[0];
+   player2.position.y = this.position[1];
+}
 
-    
-   
+
+
+
 }
 
 // socket.on( 'message', function( data ) {
@@ -165,15 +164,15 @@ var view = {
         ball.createBall();
 
         app.ticker.add(function() { //постоянное обновление холста
-          
+
             ball.setposition();
             twoplayer.setposition();
         });
     }
 }
 var vall = {
-      width: 600,
-      height: 800,
+  width: 600,
+  height: 800,
 }
 
 var controller = {
