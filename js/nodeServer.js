@@ -94,19 +94,19 @@ io.sockets.on( 'connection', function( client ) {
 		for(var key in rooms){
 			for(var player in rooms[key]){
 				if(rooms[key][player].id == client.id){
-					rooms[key][player].lastposition = rooms[key][player].position;
 					rooms[key][player].position = data.position;
-					var lastSpeedValue = minusVector(rooms[key][player].position, rooms[key][player].lastposition);
-					this.lastPosition = this.mousePosition;
 					if(player == 'twoplayer'){
 						rooms[key][player].position = minusVector([vall.width, vall.height], rooms[key][player].position);
 					}
-
+					
+					var lastSpeedValue = minusVector(rooms[key][player].position, rooms[key][player].lastposition);
+					rooms[key][player].lastposition = rooms[key][player].position;
+					
 					var checkPlayer = distanceTwoVector(rooms[key].ball.position, rooms[key][player].position);
 
 					if (checkPlayer<ball.radius*2){
-
-						rooms[key].ball.speed = plusVector(rooms[key].ball.speed, multiplexVectorConstant(lastSpeedValue, 0.2));
+						if(Math.abs(rooms[key].ball.speed[0]) < 70 && Math.abs(rooms[key].ball.speed[1] < 70))
+						rooms[key].ball.speed = plusVector(lastSpeedValue, rooms[key].ball.speed);
 						rooms[key].ball.speed = angleReflextion(rooms[key].ball.speed, minusVector(rooms[key].ball.position, rooms[key][player].position));
 						var pos = minusVector(rooms[key].ball.position, rooms[key][player].position);
 						var cut = Math.atan(pos[0]/pos[1]);
@@ -184,15 +184,18 @@ function moveBall(ballstatus, first, two, key){
 }
 
 var ball = {
-	radius: 60
+	radius: 25
 } 
 
 
 
 var vall = {
-	width: 600,
-	height: 800,
+	width: 400,
+	height: 540,
 	checkAboard: function(vec, key) {
+		if(vec[1] < -ball.radius || vec[1] > this.height + 3*ball.radius){
+			rooms[key].ball.status = false;
+		}
 		if(vec[0] + ball.radius > this.width){
 			rooms[key].ball.position = [this.width-ball.radius, vec[1]];
 			return [this.width, 0];
@@ -201,11 +204,11 @@ var vall = {
 			rooms[key].ball.position = [ball.radius, vec[1]];
 			return [-this.width, 0];
 		}
-		if(vec[1] + ball.radius > this.height){
+		if(vec[1] + ball.radius > this.height && (vec[0] < 120 || vec[0] > this.width - 120)){
 			rooms[key].ball.position = [vec[0], this.height-ball.radius];
 			return [0, this.height];
 		}
-		if(vec[1] < ball.radius){
+		if(vec[1] < ball.radius && (vec[0] < 120 || vec[0] > this.width - 120)){
 			rooms[key].ball.position = [vec[0], ball.radius];
 			return [0, -this.height];
 		}

@@ -1,7 +1,7 @@
 var socket = io.connect( 'http://localhost:8080' );
 
 socket.on( 'message', function( data ) {
-	ball.position = data.position;
+	ball.position = [data.position[0], data.position[1]+vall.marginLine];
     console.log(data.position);
 	twoplayer.position = data.twoplayer;
 });
@@ -55,10 +55,35 @@ var model = {
     createCanvas: function() {
         app = new PIXI.Application(vall.width, vall.height); //создае холст
         document.body.appendChild(app.view); //выводим его в тело страницы
+        this.drawLine();
+        
     },
+    drawLine: function(){
+        var lineHeight = 4;
+        var lengthline = 120;
+
+        var line = new PIXI.Graphics();
+        line.position.set( 0, vall.marginLine);
+        line.lineStyle(lineHeight, 0xffffff).moveTo(0, 0).lineTo( lengthline, 0 );
+        app.stage.addChild(line);
+
+        var line2 = new PIXI.Graphics();
+        line2.position.set( vall.width-lengthline, vall.marginLine );
+        line2.lineStyle(lineHeight, 0xffffff).moveTo(0, 0).lineTo( lengthline, 0 );
+        app.stage.addChild(line2);
+
+        var line3 = new PIXI.Graphics();
+        line3.position.set( 0, vall.height-vall.marginLine);
+        line3.lineStyle(lineHeight, 0xffffff).moveTo(0, 0).lineTo( lengthline, 0 );
+        app.stage.addChild(line3);
+
+        var line4 = new PIXI.Graphics();
+        line4.position.set( vall.width-lengthline, vall.height-vall.marginLine);
+        line4.lineStyle(lineHeight, 0xffffff).moveTo(0, 0).lineTo( lengthline, 0 );
+        app.stage.addChild(line4);
+    },
+
     drawCircle: function(vec) {
-
-
 
         var circle = new PIXI.Graphics(); //создаем новый графический элемент
         circle.lineStyle(0); //начинаем рисовать
@@ -100,11 +125,11 @@ var firstplayer = {
         if(firstplayer.mousePosition[0]<ball.radius) firstplayer.mousePosition[0] = ball.radius;
         if(firstplayer.mousePosition[1]<vall.height/2+ball.radius) firstplayer.mousePosition[1] = vall.height/2+ball.radius;
         if(firstplayer.mousePosition[0]> vall.width-ball.radius) firstplayer.mousePosition[0] = vall.width-ball.radius;
-        if(firstplayer.mousePosition[1]> vall.height-ball.radius) firstplayer.mousePosition[1] = vall.height-ball.radius;
+        if(firstplayer.mousePosition[1]> vall.height-ball.radius-vall.marginLine) firstplayer.mousePosition[1] = vall.height-ball.radius-vall.marginLine;
         player.position.x = firstplayer.mousePosition[0];
         player.position.y = firstplayer.mousePosition[1];
         firstplayer.lastspeed();
-        socket.emit( 'message', { position: firstplayer.mousePosition } );
+        socket.emit( 'message', { position: [firstplayer.mousePosition[0], firstplayer.mousePosition[1]-vall.marginLine] } );
     }    
 },
 lastspeed: function() {
@@ -140,7 +165,7 @@ var twoplayer = {
 
 
 var ball = {
-    radius: 60,
+    radius: 25,
     position: [200, 200],
     speed: [11, 11],
     acceleration: 0.999,
@@ -171,8 +196,9 @@ var view = {
     }
 }
 var vall = {
-  width: 600,
-  height: 800,
+  width: 400,
+  height: 640,
+  marginLine: ball.radius*2,
 }
 
 var controller = {
